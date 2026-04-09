@@ -9,18 +9,16 @@ export default async (req) => {
   }
 
   const store = getStore("portfolio-images");
-  const entry = await store.getWithMetadata(key, { consistency: "strong" }).catch(() => null);
+  const blob = await store.get(key, { type: "blob", consistency: "strong" }).catch(() => null);
 
-  if (!entry || !entry.data) {
+  if (!blob) {
     return new Response("No encontrada.", { status: 404 });
   }
 
-  const contentType = entry.metadata?.contentType || "application/octet-stream";
-
-  return new Response(entry.data, {
+  return new Response(blob.stream(), {
     status: 200,
     headers: {
-      "Content-Type": contentType,
+      "Content-Type": blob.type || "application/octet-stream",
       "Cache-Control": "public, max-age=31536000, immutable"
     }
   });
