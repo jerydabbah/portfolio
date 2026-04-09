@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeremias Dabbah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f5f3; --white: #fff; --black: #000; --gray: #888; --light-gray: #e8e8e6;
+    --font-ui: 'DM Sans', sans-serif; --font-display: 'Bricolage Grotesque', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-ui); background: var(--white); color: var(--black); -webkit-font-smoothing: antialiased; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 32px 48px; background: rgba(255,255,255,0.93); backdrop-filter: blur(8px); }
+  .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; color: var(--black); }
+  .nav-right { display: flex; align-items: center; gap: 36px; }
+  .nav-link { font-size: 15px; font-weight: 400; letter-spacing: 0.06em; color: var(--black); text-decoration: none; cursor: pointer; transition: opacity 0.2s; background: none; border: none; padding: 0; font-family: var(--font-ui); }
+  .nav-link:hover { opacity: 0.45; }
+  .nav-ig { display: flex; align-items: center; }
+  .nav-ig svg { width: 18px; height: 18px; }
+
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+  #page-overview { padding: 120px 32px 80px; }
+
+  .masonry { columns: 3; column-gap: 18px; }
+  @media (max-width: 900px) { .masonry { columns: 2; } }
+  @media (max-width: 560px) { .masonry { columns: 1; } }
+  .masonry-item { break-inside: avoid; margin-bottom: 18px; cursor: pointer; }
+  .masonry-item img { width: 100%; display: block; transition: opacity 0.25s; }
+  .masonry-item:hover img { opacity: 0.85; }
+  .masonry-caption { font-size: 11.5px; font-weight: 300; color: var(--gray); margin-top: 7px; letter-spacing: 0.02em; }
+
+  .lightbox { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(245,245,243,0.97); align-items: center; justify-content: center; }
+  .lightbox.open { display: flex; }
+  .lightbox-inner { max-width: 60vw; max-height: 85vh; display: flex; flex-direction: column; align-items: flex-start; }
+  @media (max-width: 700px) { .lightbox-inner { max-width: 90vw; } }
+  .lightbox-inner img { max-width: 100%; max-height: 80vh; object-fit: contain; display: block; }
+  .lb-caption { font-size: 11.5px; font-weight: 300; color: var(--gray); margin-top: 10px; letter-spacing: 0.02em; }
+  .lb-close { position: fixed; top: 20px; right: 28px; font-size: 22px; cursor: pointer; color: var(--black); opacity: 0.5; transition: opacity 0.2s; background: none; border: none; padding: 4px; z-index: 210; }
+  .lb-close:hover { opacity: 1; }
+  .lb-prev, .lb-next { position: fixed; top: 50%; transform: translateY(-50%); font-size: 24px; cursor: pointer; opacity: 0.4; transition: opacity 0.2s; background: none; border: none; color: var(--black); padding: 24px 16px; z-index: 210; }
+  .lb-prev:hover, .lb-next:hover { opacity: 1; }
+  .lb-prev { left: 8px; } .lb-next { right: 8px; }
+
+  #page-contact { padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
+  .contact-hero { flex: 1; min-height: calc(100vh - 80px); background: var(--bg); }
+  .contact-text { padding: 160px 60px 60px; }
+  .contact-email { font-family: var(--font-display); font-size: clamp(30px,4.5vw,60px); font-weight: 800; letter-spacing: -0.02em; color: var(--black); text-decoration: underline; text-underline-offset: 6px; display: block; margin-bottom: 52px; line-height: 1; }
+  .contact-city { font-family: var(--font-display); font-size: clamp(30px,4.5vw,60px); font-weight: 800; letter-spacing: -0.02em; color: var(--black); line-height: 1; }
+  .contact-footer { background: var(--bg); padding: 28px 48px; display: flex; justify-content: space-between; align-items: flex-start; border-top: 1px solid var(--light-gray); }
+  .contact-footer-copy { font-size: 12px; font-weight: 400; color: var(--black); letter-spacing: 0.05em; text-transform: uppercase; }
+  .contact-footer-links { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .contact-footer-links-row { display: flex; gap: 14px; align-items: center; }
+  .contact-footer-links a { font-size: 11px; font-weight: 400; color: var(--black); text-decoration: underline; letter-spacing: 0.05em; text-transform: uppercase; transition: opacity 0.2s; }
+  .contact-footer-links a:hover { opacity: 0.45; }
+  .footer-sep { font-size: 11px; color: var(--gray); }
+
+  /* ADMIN PANEL */
+  .admin-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.45); align-items: flex-end; }
+  .admin-overlay.open { display: flex; }
+  .admin-panel { background: #fff; width: 100%; max-height: 90vh; border-radius: 16px 16px 0 0; display: flex; flex-direction: column; overflow: hidden; }
+  .admin-header { padding: 20px 28px; border-bottom: 1px solid var(--light-gray); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .admin-header h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .admin-header p { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .admin-close { background: none; border: none; font-size: 20px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; padding: 4px; }
+  .admin-close:hover { opacity: 1; }
+  .admin-body { overflow-y: auto; padding: 24px 28px; flex: 1; }
+
+  .dropzone { border: 2px dashed #ccc; border-radius: 10px; padding: 32px; text-align: center; background: var(--bg); cursor: pointer; transition: border-color 0.2s, background 0.2s; margin-bottom: 28px; }
+  .dropzone.over { border-color: #111; background: #eeecea; }
+  .dropzone p { font-size: 13px; color: var(--gray); margin-bottom: 10px; }
+  .dropzone input { display: none; }
+
+  .btn { display: inline-block; padding: 9px 20px; background: #111; color: #fff; border: none; border-radius: 6px; font-family: var(--font-ui); font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.75; }
+  .btn-outline { background: transparent; color: #111; border: 1px solid #ccc; }
+  .btn-outline:hover { background: var(--bg); opacity: 1; }
+
+  .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .admin-card { background: var(--bg); border-radius: 8px; overflow: hidden; border: 1.5px solid transparent; transition: border-color 0.2s; position: relative; }
+  .admin-card.drag-over { border-color: #111; }
+  .admin-card.dragging { opacity: 0.3; }
+  .admin-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .card-body { padding: 8px 10px 10px; }
+  .card-body input { width: 100%; font-family: var(--font-ui); font-size: 11px; border: none; border-bottom: 1px solid var(--light-gray); padding: 3px 0; background: transparent; color: #111; outline: none; }
+  .card-body input:focus { border-color: #111; }
+  .card-del { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
+  .admin-card:hover .card-del { opacity: 1; }
+  .drag-hint { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.75); border-radius: 4px; padding: 2px 5px; font-size: 11px; cursor: grab; color: #555; opacity: 0; transition: opacity 0.15s; }
+  .admin-card:hover .drag-hint { opacity: 1; }
+
+  .admin-footer { padding: 16px 28px; border-top: 1px solid var(--light-gray); display: flex; gap: 12px; align-items: center; flex-shrink: 0; background: #fff; }
+  .save-msg { font-size: 12px; color: #27ae60; margin-left: auto; opacity: 0; transition: opacity 0.3s; }
+  .save-msg.show { opacity: 1; }
+
+  .admin-hint { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.06); color: #bbb; font-size: 10px; padding: 5px 12px; border-radius: 20px; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s; z-index: 50; font-family: var(--font-ui); border: none; }
+  .admin-hint:hover { background: rgba(0,0,0,0.12); color: #555; }
+
+  .pw-overlay { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; }
+  .pw-overlay.open { display:flex; }
+  .pw-box { background:#fff; border-radius:12px; padding:28px 32px; width:280px; display:flex; flex-direction:column; gap:12px; }
+  .pw-box p { font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; }
+  .pw-box input { font-family:var(--font-ui); font-size:14px; padding:8px 12px; border:1px solid var(--light-gray); border-radius:6px; outline:none; width:100%; }
+  .pw-box input:focus { border-color:#111; }
+  .pw-error { font-size:11px; color:#c0392b; opacity:0; transition:opacity 0.2s; }
+  .pw-error.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('overview'); return false;">Jeremias Dabbah</a>
+  <div class="nav-right">
+    <button class="nav-link" onclick="showPage('overview')">Overview</button>
+    <button class="nav-link" onclick="showPage('contact')">Contact</button>
+    <a class="nav-link nav-ig" href="https://www.instagram.com/" target="_blank" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
+  </div>
+</nav>
+
+<div id="page-overview" class="page active">
+  <div class="masonry" id="masonry-grid"></div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lb-close">&#10005;</button>
+  <button class="lb-prev" id="lb-prev">&#8592;</button>
+  <div class="lightbox-inner">
+    <img id="lb-img" src="" alt="">
+    <div class="lb-caption" id="lb-caption"></div>
+  </div>
+  <button class="lb-next" id="lb-next">&#8594;</button>
+</div>
+
+<div id="page-contact" class="page">
+  <div class="contact-hero">
+    <div class="contact-text">
+      <a class="contact-email" href="mailto:Jerydabbah@Gmail.Com">Jerydabbah@Gmail.Com</a>
+      <div class="contact-city">Buenos Aires, Argentina</div>
+    </div>
+  </div>
+  <div class="contact-footer">
+    <span class="contact-footer-copy">&#169; 2026 Jeremias Dabbah</span>
+    <div class="contact-footer-links">
+      <div class="contact-footer-links-row">
+        <a href="mailto:Jerydabbah@Gmail.Com">Email</a>
+        <span class="footer-sep">|</span>
+        <a href="https://www.instagram.com/" target="_blank">Instagram</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <div>
+        <h2>&#9998; Gestionar proyectos</h2>
+        <p>Arrastrá renders para agregar &middot; Reordenás las tarjetas &middot; Guardá</p>
+      </div>
+      <button class="admin-close" id="admin-close">&#10005;</button>
+    </div>
+    <div class="admin-body">
+      <div class="dropzone" id="dropzone">
+        <p>&#8659;&nbsp; Arrastrá tus renders acá, o</p>
+        <button class="btn" onclick="document.getElementById('file-input').click()">Elegir archivos</button>
+        <input type="file" id="file-input" multiple accept="image/*">
+      </div>
+      <div class="admin-grid" id="admin-grid"></div>
+    </div>
+    <div class="admin-footer">
+      <button class="btn" id="btn-guardar">&#10003;&nbsp; Guardar y aplicar</button>
+      <button class="btn btn-outline" id="btn-limpiar">Limpiar todo</button>
+      <span class="save-msg" id="save-msg">&#10003; Guardado y aplicado</span>
+    </div>
+  </div>
+</div>
+
+<button class="admin-hint" id="admin-hint">admin</button>
+
+<!-- PASSWORD MODAL -->
+<div class="pw-overlay" id="pw-overlay">
+  <div class="pw-box">
+    <p>Contraseña</p>
+    <input type="password" id="pw-input" placeholder="..." autocomplete="off">
+    <div class="pw-error" id="pw-error">Contraseña incorrecta</div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn" id="pw-ok">Entrar</button>
+      <button class="btn btn-outline" id="pw-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+var DEFAULT_PROJECTS = [
+  { title: "Torre Rinalda",                src: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=80" },
+  { title: "Nest Apartments",              src: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80" },
+  { title: "Cultural Center Buenos Aires", src: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80" },
+  { title: "Schmatkamp House",             src: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" },
+  { title: "Office Interior",              src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" },
+  { title: "Apartments",                   src: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80" },
+  { title: "Torre Rinalda Aerial",         src: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80" },
+  { title: "Residential",                  src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" },
+  { title: "House in Snow",                src: "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=800&q=80" },
+  { title: "Interior",                     src: "https://images.unsplash.com/photo-1616137466211-f939a420be84?w=800&q=80" },
+  { title: "Retail Space",                 src: "https://images.unsplash.com/photo-1573496774333-4b4e7a1cedb0?w=800&q=80" },
+  { title: "Kitchen Interior",             src: "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800&q=80" }
+];
+
+var PROYECTOS = DEFAULT_PROJECTS.slice();
+var pendingFiles = [];
+var gridEl = document.getElementById('masonry-grid');
+var currentIdx = 0;
+var dragSrcIdx = null;
+
+function setSaveMessage(text, isError) {
+  var msg = document.getElementById('save-msg');
+  msg.textContent = text;
+  msg.style.color = isError ? '#c0392b' : '#27ae60';
+  msg.classList.add('show');
+  clearTimeout(setSaveMessage._timer);
+  setSaveMessage._timer = setTimeout(function() {
+    msg.classList.remove('show');
+  }, 3000);
+}
+
+async function apiFetch(url, options) {
+  var res = await fetch(url, options || {});
+  if (!res.ok) {
+    var text = '';
+    try { text = await res.text(); } catch (e) {}
+    throw new Error(text || ('Error ' + res.status));
+  }
+  return res;
+}
+
+async function loadProjects() {
+  try {
+    var res = await fetch('/.netlify/functions/get-projects', { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudieron cargar los proyectos');
+    var data = await res.json();
+    if (Array.isArray(data) && data.length) {
+      PROYECTOS = data;
+    } else {
+      PROYECTOS = DEFAULT_PROJECTS.slice();
+    }
+  } catch (e) {
+    PROYECTOS = DEFAULT_PROJECTS.slice();
+  }
+  renderPortfolio();
+}
+
+function renderPortfolio() {
+  gridEl.innerHTML = '';
+  PROYECTOS.forEach(function(p, idx) {
+    var div = document.createElement('div');
+    div.className = 'masonry-item';
+    var img = document.createElement('img');
+    img.src = p.src;
+    img.alt = p.title;
+    img.loading = 'lazy';
+    var cap = document.createElement('div');
+    cap.className = 'masonry-caption';
+    cap.textContent = p.title;
+    div.appendChild(img);
+    div.appendChild(cap);
+    div.addEventListener('click', function() { openLightbox(idx); });
+    gridEl.appendChild(div);
+  });
+}
+
+loadProjects();
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function openLightbox(idx) {
+  currentIdx = idx;
+  updateLb();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function shiftLb(dir) {
+  if (!PROYECTOS.length) return;
+  currentIdx = (currentIdx + dir + PROYECTOS.length) % PROYECTOS.length;
+  updateLb();
+}
+function updateLb() {
+  var p = PROYECTOS[currentIdx];
+  if (!p) return;
+  document.getElementById('lb-img').src = p.src;
+  document.getElementById('lb-img').alt = p.title;
+  document.getElementById('lb-caption').textContent = p.title;
+}
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', function() { shiftLb(-1); });
+document.getElementById('lb-next').addEventListener('click', function() { shiftLb(1); });
+document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === this) closeLightbox(); });
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') shiftLb(-1);
+    if (e.key === 'ArrowRight') shiftLb(1);
+  }
+});
+
+function openAdmin() {
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').classList.remove('show');
+  document.getElementById('pw-overlay').classList.add('open');
+  setTimeout(function() { document.getElementById('pw-input').focus(); }, 50);
+}
+
+function _openAdminPanel() {
+  renderAdminGrid();
+  document.getElementById('admin-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+async function checkPassword() {
+  var val = document.getElementById('pw-input').value;
+  try {
+    await apiFetch('/.netlify/functions/admin-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: val })
+    });
+    document.getElementById('pw-overlay').classList.remove('open');
+    _openAdminPanel();
+  } catch (e) {
+    document.getElementById('pw-error').classList.add('show');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+document.getElementById('pw-ok').addEventListener('click', checkPassword);
+document.getElementById('pw-cancel').addEventListener('click', function() {
+  document.getElementById('pw-overlay').classList.remove('open');
+});
+document.getElementById('pw-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkPassword();
+  if (e.key === 'Escape') document.getElementById('pw-overlay').classList.remove('open');
+});
+
+function closeAdmin() {
+  document.getElementById('admin-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('admin-hint').addEventListener('click', openAdmin);
+document.getElementById('admin-close').addEventListener('click', closeAdmin);
+document.getElementById('admin-overlay').addEventListener('click', function(e) { if (e.target === this) closeAdmin(); });
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'a' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') openAdmin();
+});
+
+var dz = document.getElementById('dropzone');
+dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', function() { dz.classList.remove('over'); });
+dz.addEventListener('drop', function(e) {
+  e.preventDefault();
+  dz.classList.remove('over');
+  handleFiles(e.dataTransfer.files);
+});
+document.getElementById('file-input').addEventListener('change', function() {
+  handleFiles(this.files);
+  this.value = '';
+});
+
+function handleFiles(files) {
+  var arr = Array.from(files).filter(function(f) { return f.type.startsWith('image/'); });
+  var loaded = 0;
+  if (!arr.length) return;
+  arr.forEach(function(file) {
+    var previewUrl = URL.createObjectURL(file);
+    pendingFiles.push({ previewUrl: previewUrl, file: file });
+    PROYECTOS.push({
+      title: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+      src: previewUrl,
+      _pendingUpload: true,
+      _fileRef: previewUrl
+    });
+    loaded++;
+    if (loaded === arr.length) renderAdminGrid();
+  });
+}
+
+function renderAdminGrid() {
+  var ag = document.getElementById('admin-grid');
+  ag.innerHTML = '';
+  PROYECTOS.forEach(function(p, idx) {
+    var card = document.createElement('div');
+    card.className = 'admin-card';
+    card.draggable = true;
+
+    var dh = document.createElement('div');
+    dh.className = 'drag-hint';
+    dh.textContent = '\u283f';
+
+    var img = document.createElement('img');
+    img.src = p.src;
+    img.alt = p.title;
+
+    var body = document.createElement('div');
+    body.className = 'card-body';
+
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.value = p.title;
+    input.placeholder = 'Titulo';
+    input.addEventListener('input', function() { PROYECTOS[idx].title = this.value; });
+    body.appendChild(input);
+
+    var del = document.createElement('button');
+    del.className = 'card-del';
+    del.innerHTML = '&#10005;';
+    del.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (PROYECTOS[idx] && PROYECTOS[idx]._pendingUpload && PROYECTOS[idx]._fileRef) {
+        pendingFiles = pendingFiles.filter(function(item) { return item.previewUrl !== PROYECTOS[idx]._fileRef; });
+        try { URL.revokeObjectURL(PROYECTOS[idx]._fileRef); } catch (err) {}
+      }
+      PROYECTOS.splice(idx, 1);
+      renderAdminGrid();
+    });
+
+    card.appendChild(dh);
+    card.appendChild(img);
+    card.appendChild(body);
+    card.appendChild(del);
+
+    card.addEventListener('dragstart', function() {
+      dragSrcIdx = idx;
+      setTimeout(function() { card.classList.add('dragging'); }, 0);
+    });
+    card.addEventListener('dragend', function() {
+      card.classList.remove('dragging');
+      ag.querySelectorAll('.admin-card').forEach(function(c) { c.classList.remove('drag-over'); });
+    });
+    card.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      ag.querySelectorAll('.admin-card').forEach(function(c) { c.classList.remove('drag-over'); });
+      if (dragSrcIdx !== idx) card.classList.add('drag-over');
+    });
+    card.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (dragSrcIdx !== null && dragSrcIdx !== idx) {
+        var moved = PROYECTOS.splice(dragSrcIdx, 1)[0];
+        PROYECTOS.splice(idx, 0, moved);
+        dragSrcIdx = null;
+        renderAdminGrid();
+      }
+    });
+
+    ag.appendChild(card);
+  });
+}
+
+async function uploadPendingFiles() {
+  for (var i = 0; i < PROYECTOS.length; i++) {
+    var p = PROYECTOS[i];
+    if (!p._pendingUpload) continue;
+
+    var match = pendingFiles.find(function(item) { return item.previewUrl === p._fileRef; });
+    if (!match) throw new Error('No se encontro un archivo pendiente para "' + p.title + '".');
+
+    var form = new FormData();
+    form.append('file', match.file);
+
+    var res = await apiFetch('/.netlify/functions/admin-upload', {
+      method: 'POST',
+      body: form
+    });
+    var data = await res.json();
+
+    p.src = data.src;
+    delete p._pendingUpload;
+    delete p._fileRef;
+  }
+
+  pendingFiles.forEach(function(item) {
+    try { URL.revokeObjectURL(item.previewUrl); } catch (e) {}
+  });
+  pendingFiles = [];
+}
+
+document.getElementById('btn-guardar').addEventListener('click', async function() {
+  var button = this;
+  button.disabled = true;
+  button.style.opacity = '0.6';
+
+  try {
+    await uploadPendingFiles();
+
+    var cleanProjects = PROYECTOS.map(function(p) {
+      return { title: p.title, src: p.src };
+    });
+
+    await apiFetch('/.netlify/functions/admin-save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projects: cleanProjects })
+    });
+
+    PROYECTOS = cleanProjects;
+    renderPortfolio();
+    closeAdmin();
+    setSaveMessage('✓ Guardado y aplicado', false);
+  } catch (e) {
+    setSaveMessage(e.message || 'No se pudo guardar', true);
+  } finally {
+    button.disabled = false;
+    button.style.opacity = '';
+  }
+});
+
+document.getElementById('btn-limpiar').addEventListener('click', async function() {
+  if (!confirm('Eliminar todos los proyectos?')) return;
+
+  PROYECTOS.forEach(function(p) {
+    if (p._pendingUpload && p._fileRef) {
+      try { URL.revokeObjectURL(p._fileRef); } catch (e) {}
+    }
+  });
+  pendingFiles = [];
+  PROYECTOS = [];
+  renderAdminGrid();
+  renderPortfolio();
+});
+
+</script>
+
+</body>
+</html>
