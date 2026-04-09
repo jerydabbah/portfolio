@@ -110,6 +110,36 @@
   .pw-box input:focus { border-color:#111; }
   .pw-error { font-size:11px; color:#c0392b; opacity:0; transition:opacity 0.2s; }
   .pw-error.show { opacity:1; }
+  .upwork-btn {
+  display: inline-flex;
+  align-items: center;
+
+  margin-bottom: 60px;
+
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+
+  color: #ffffff;
+  text-decoration: none;
+
+  background: #6FDA44; /* verde Upwork */
+  border: 2px solid #6FDA44;
+
+  padding: 20px 32px;
+  border-radius: 999px;
+
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* hover elegante */
+.upwork-btn:hover {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+
+  transform: translateY(-2px);
+}
 </style>
 </head>
 <body>
@@ -154,14 +184,9 @@
     Jerydabbah@gmail.com
   </a>
 
-  <a href="https://www.upwork.com/freelancers/~018d014da3be957474?mp_source=share" target="_blank" style="display:inline-flex; align-items:center; gap:10px; margin-bottom: 60px; font-family: var(--font-ui); font-size: 14px; font-weight: 500; color: var(--black); text-decoration: none; border: 1px solid var(--light-gray); padding: 12px 18px; border-radius: 999px;">
-    
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17.5 14.2c-1.1 0-2.1-.5-2.8-1.2l.6-2.9.1-.5c.5 1 1.2 1.8 2.1 2.4.5.3 1.1.5 1.8.5 1.7 0 3.1-1.4 3.1-3.1s-1.4-3.1-3.1-3.1c-1.5 0-2.8 1.1-3 2.5l-1 4.9c-.5 2.3-2.5 4-4.9 4-1.8 0-3.4-.9-4.3-2.3l.4 2H4l-1.7-8h2.5l1 4.7c.4 1.7 1.9 2.8 3.6 2.8 1.8 0 3.3-1.3 3.6-3l1-4.8c.4-2.5 2.6-4.4 5.2-4.4 3 0 5.4 2.4 5.4 5.4s-2.4 5.4-5.4 5.4Z"/>
-    </svg>
-
-    <span>Hire me through Upwork</span>
-  </a>
+<a href="https://www.upwork.com/freelancers/~018d014da3be957474?mp_source=share" target="_blank" class="upwork-btn">
+  Hire me through Upwork
+</a>
 
   <div class="contact-city">Buenos Aires, Argentina</div>
 </div>
