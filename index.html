@@ -389,22 +389,87 @@ document.getElementById('file-input').addEventListener('change', function() {
   this.value = '';
 });
 
-function handleFiles(files) {
-  var arr = Array.from(files).filter(function(f) { return f.type.startsWith('image/'); });
-  var loaded = 0;
-  if (!arr.length) return;
-  arr.forEach(function(file) {
-    var previewUrl = URL.createObjectURL(file);
-    pendingFiles.push({ previewUrl: previewUrl, file: file });
-    PROYECTOS.push({
-      title: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
-      src: previewUrl,
-      _pendingUpload: true,
-      _fileRef: previewUrl
-    });
-    loaded++;
-    if (loaded === arr.length) renderAdminGrid();
+async function compressImage(file, maxSize = 2400, quality = 0.88) {
+  return new Promise(function(resolve, reject) {
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+
+    img.onload = function() {
+      var width = img.width;
+      var height = img.height;
+
+      if (width > height) {
+        if (width > maxSize) {
+          height = Math.round(height * (maxSize / width));
+          width = maxSize;
+        }
+      } else {
+        if (height > maxSize) {
+          width = Math.round(width * (maxSize / height));
+          height = maxSize;
+        }
+      }
+
+      var canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(function(blob) {
+        URL.revokeObjectURL(url);
+
+        if (!blob) {
+          reject(new Error('No se pudo comprimir la imagen'));
+          return;
+        }
+
+        var compressedFile = new File(
+          [blob],
+          file.name.replace(/\.[^.]+$/, '') + '.jpg',
+          { type: 'image/jpeg' }
+        );
+
+        resolve(compressedFile);
+      }, 'image/jpeg', quality);
+    };
+
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
+      reject(new Error('No se pudo leer la imagen'));
+    };
+
+    img.src = url;
   });
+}
+
+async function handleFiles(files) {
+  var arr = Array.from(files).filter(function(f) {
+    return f.type.startsWith('image/');
+  });
+
+  if (!arr.length) return;
+
+  for (const file of arr) {
+    try {
+      var compressed = await compressImage(file, 2400, 0.88);
+      var previewUrl = URL.createObjectURL(compressed);
+
+      pendingFiles.push({ previewUrl: previewUrl, file: compressed });
+
+      PROYECTOS.push({
+        title: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+        src: previewUrl,
+        _pendingUpload: true,
+        _fileRef: previewUrl
+      });
+    } catch (e) {
+      console.error('Error comprimiendo imagen:', e);
+    }
+  }
+
+  renderAdminGrid();
 }
 
 function renderAdminGrid() {
