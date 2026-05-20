@@ -29,39 +29,30 @@
   #page-overview { padding: 120px 32px 80px; }
 
 .masonry {
-  column-count: unset;
-
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-
-  align-items: start;
+  columns: 3;
+  column-gap: 18px;
 }
 
 @media (max-width: 900px) {
   .masonry {
-    grid-template-columns: repeat(2, 1fr);
+    columns: 2;
   }
 }
 
 @media (max-width: 560px) {
   .masonry {
-    grid-template-columns: 1fr;
+    columns: 1;
   }
 }
 
 .masonry-item {
-  margin-bottom: 0;
-  break-inside: unset;
-
-  display: flex;
-  flex-direction: column;
+  break-inside: avoid;
+  margin-bottom: 18px;
 }
 
 .masonry-item img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
   display: block;
 }
 
@@ -111,11 +102,31 @@
   .btn-outline { background: transparent; color: #111; border: 1px solid #ccc; }
   .btn-outline:hover { background: var(--bg); opacity: 1; }
 
-  .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+ .admin-grid {
+  columns: 3;
+  column-gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .admin-grid {
+    columns: 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-grid {
+    columns: 1;
+  }
+}
   .admin-card { background: var(--bg); border-radius: 8px; overflow: hidden; border: 1.5px solid transparent; transition: border-color 0.2s; position: relative; }
   .admin-card.drag-over { border-color: #111; }
   .admin-card.dragging { opacity: 0.3; }
-  .admin-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .admin-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
   .card-body { padding: 8px 10px 10px; }
   .card-body input { width: 100%; font-family: var(--font-ui); font-size: 11px; border: none; border-bottom: 1px solid var(--light-gray); padding: 3px 0; background: transparent; color: #111; outline: none; }
   .card-body input:focus { border-color: #111; }
