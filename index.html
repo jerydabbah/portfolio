@@ -29,11 +29,12 @@
   #page-overview { padding: 120px 32px 80px; }
 
 .masonry {
+  column-count: unset;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 
-  grid-auto-flow: dense;
   align-items: start;
 }
 
@@ -50,13 +51,18 @@
 }
 
 .masonry-item {
-  position: relative;
+  margin-bottom: 0;
+  break-inside: unset;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .masonry-item img {
   width: 100%;
   height: auto;
   display: block;
+  object-fit: cover;
 }
 
   .lightbox { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(245,245,243,0.97); align-items: center; justify-content: center; }
