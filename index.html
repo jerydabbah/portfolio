@@ -28,10 +28,12 @@
   .page.active { display: block; }
   #page-overview { padding: 120px 32px 80px; }
 
-  .masonry {
+.masonry {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
+
+  grid-auto-flow: dense;
   align-items: start;
 }
 
@@ -46,10 +48,16 @@
     grid-template-columns: 1fr;
   }
 }
-  .masonry-item { break-inside: avoid; margin-bottom: 18px; cursor: pointer; }
-  .masonry-item img { width: 100%; display: block; transition: opacity 0.25s; }
-  .masonry-item:hover img { opacity: 0.85; }
-  .masonry-caption { font-size: 11.5px; font-weight: 300; color: var(--gray); margin-top: 7px; letter-spacing: 0.02em; }
+
+.masonry-item {
+  position: relative;
+}
+
+.masonry-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
   .lightbox { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(245,245,243,0.97); align-items: center; justify-content: center; }
   .lightbox.open { display: flex; }
