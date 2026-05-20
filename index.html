@@ -28,9 +28,24 @@
   .page.active { display: block; }
   #page-overview { padding: 120px 32px 80px; }
 
-  .masonry { columns: 3; column-gap: 18px; }
-  @media (max-width: 900px) { .masonry { columns: 2; } }
-  @media (max-width: 560px) { .masonry { columns: 1; } }
+  .masonry {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .masonry {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .masonry {
+    grid-template-columns: 1fr;
+  }
+}
   .masonry-item { break-inside: avoid; margin-bottom: 18px; cursor: pointer; }
   .masonry-item img { width: 100%; display: block; transition: opacity 0.25s; }
   .masonry-item:hover img { opacity: 0.85; }
